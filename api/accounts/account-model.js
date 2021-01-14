@@ -4,6 +4,7 @@ module.exports = {
   get,
   getById,
   create,
+  updateAccount,
 };
 
 function get() {
@@ -15,8 +16,18 @@ function getById(id) {
 }
 
 function create(account) {
-    return db("accounts").insert(account)
-        .then(([id]) => {
-            return getById(id)
-        })
+  return db("accounts")
+    .insert(account)
+    .then(([id]) => {
+      return getById(id);
+    });
+}
+
+function updateAccount(id, account) {
+  return db("accounts")
+    .update(account)
+    .where("id", id)
+    .then(() => {
+      return getById(id);
+    });
 }

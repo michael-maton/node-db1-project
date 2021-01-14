@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const data = await Account.get();
-    res.json(data);
+    res.status(200).json(data);
   } catch (err) {
     next(err);
   }
@@ -23,6 +23,16 @@ router.post("/", checkPayload, async (req, res, next) => {
     try{
         const account = await Account.create(req.body)
         res.status(201).json(account)
+    }
+    catch (err) {
+        next(err)
+    }
+})
+
+router.put("/:id", checkId, checkUpdate, async (req, res, next) => {
+    try{
+        const account = await Account.updateAccount(req.params.id, req.body)
+        res.status(200).json(account)
     }
     catch (err) {
         next(err)
@@ -59,6 +69,10 @@ async function checkId(req, res, next) {
 function checkPayload(req, res, next) {
     console.log("checking form")
     req.body.name && req.body.budget ? next() : res.status(400).json({ error: "please provide name and budget" })
+}
+function checkUpdate(req, res, next) {
+    console.log("checking form")
+    req.body.name || req.body.budget ? next() : res.status(400).json({ error: "please provide name or budget" })
 }
 
 module.exports = router;
