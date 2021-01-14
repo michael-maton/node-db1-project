@@ -16,31 +16,35 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", checkId, async (req, res) => {
-    res.status(200).json(req.account);
+  res.status(200).json(req.account);
 });
 
 router.post("/", checkPayload, async (req, res, next) => {
-    try{
-        const account = await Account.create(req.body)
-        res.status(201).json(account)
-    }
-    catch (err) {
-        next(err)
-    }
-})
+  try {
+    const account = await Account.create(req.body);
+    res.status(201).json(account);
+  } catch (err) {
+    next(err);
+  }
+});
 
 router.put("/:id", checkId, checkUpdate, async (req, res, next) => {
-    try{
-        const account = await Account.updateAccount(req.params.id, req.body)
-        res.status(200).json(account)
-    }
-    catch (err) {
-        next(err)
-    }
-})
+  try {
+    const account = await Account.update(req.params.id, req.body);
+    res.status(200).json(account);
+  } catch (err) {
+    next(err);
+  }
+});
 
-
-
+router.delete("/:id", checkId, async (req, res, next) => {
+  try {
+    const acc = await Account.remove(req.params.id);
+    res.status(200).json(acc);
+  } catch (err) {
+    next(err);
+  }
+});
 
 // MIDDLEWARE
 // MIDDLEWARE
@@ -50,29 +54,33 @@ router.use((err, req, res, next) => {
 });
 
 async function checkId(req, res, next) {
-    console.log('checking user id')
-    try {
-      const account = await Account.getById(req.params.id)
-      if (account) {
-        req.account = account
-        console.log(`account id ${req.params.id} found`)
-        next()
-      } else {
-        console.log(`account with id ${req.params.id} not found`)
-        res.status(404).json(`account with id ${req.params.id} not found`)
-      }
-    } catch (error) {
-      next(error)
+  console.log("checking user id");
+  try {
+    const account = await Account.getById(req.params.id);
+    if (account) {
+      req.account = account;
+      console.log(`account id ${req.params.id} found`);
+      next();
+    } else {
+      console.log(`account with id ${req.params.id} not found`);
+      res.status(404).json(`account with id ${req.params.id} not found`);
     }
+  } catch (error) {
+    next(error);
   }
+}
 
 function checkPayload(req, res, next) {
-    console.log("checking form")
-    req.body.name && req.body.budget ? next() : res.status(400).json({ error: "please provide name and budget" })
+  console.log("checking form");
+  req.body.name && req.body.budget
+    ? next()
+    : res.status(400).json({ error: "please provide name and budget" });
 }
 function checkUpdate(req, res, next) {
-    console.log("checking form")
-    req.body.name || req.body.budget ? next() : res.status(400).json({ error: "please provide name or budget" })
+  console.log("checking form");
+  req.body.name || req.body.budget
+    ? next()
+    : res.status(400).json({ error: "please provide name or budget" });
 }
 
 module.exports = router;

@@ -4,7 +4,8 @@ module.exports = {
   get,
   getById,
   create,
-  updateAccount,
+  update,
+  remove,
 };
 
 function get() {
@@ -23,11 +24,17 @@ function create(account) {
     });
 }
 
-function updateAccount(id, account) {
+function update(id, account) {
   return db("accounts")
     .update(account)
     .where("id", id)
     .then(() => {
       return getById(id);
     });
+}
+
+async function remove(id) {
+    const accountToDelete = await getById(id)
+    await db('accounts').delete().where('id', id)
+    return Promise.resolve(accountToDelete)
 }
